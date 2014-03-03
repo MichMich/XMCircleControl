@@ -62,6 +62,7 @@
     
     self.rotation = 0;
     self.angle = [self angleForPoint:nowPoint];
+    self.distance = distance;
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
@@ -87,6 +88,7 @@
     
     self.rotation = rotation;
     self.angle = [self angleForPoint:nowPoint];
+    self.distance = [self distanceBetween:self.midPoint and:nowPoint];
 
     self.state = UIGestureRecognizerStateChanged;
 
@@ -98,6 +100,10 @@
 {
     [super touchesEnded:touches withEvent:event];
     self.state = UIGestureRecognizerStateEnded;
+    
+    self.distance = 0;
+    self.angle = 0;
+    self.rotation = 0;
 }
 
 

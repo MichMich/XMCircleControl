@@ -10,9 +10,8 @@
 #import "XMOneFingerRotationGestureRecognizer.h"
 
 
-@interface XMCircleSection ()
 
-@end
+
 
 @implementation XMCircleSection
 
@@ -24,10 +23,74 @@
 
 @end
 
+@implementation XMCircleTrack
+
+- (int) numberOfVisibleSections
+{
+    
+    int numberOfVisibleSections = 0;
+    
+    for (XMCircleSection *section in self.trackSections) {
+        if (!section.hidden) numberOfVisibleSections++;
+    }
+    
+    return numberOfVisibleSections;
+    
+}
+
+- (CGFloat) anglePerSection
+{
+    return self.availableAngle / [self numberOfVisibleSections];
+}
+
+- (XMCircleSection *) sectionForAngle:(float)angle
+{
+    
+    int sectionIndex = angle / [self anglePerSection];
+    
+    if (sectionIndex < [self numberOfVisibleSections]) return [self sectionForIndex:sectionIndex];
+    
+    return nil;
+    
+}
+
+- (int) indexForSection:(XMCircleSection *)sectionToFind
+{
+    
+    int index = 0;
+    
+    for (XMCircleSection *section in self.trackSections) {
+        if (section == sectionToFind) return index;
+        if (!section.hidden) index++;
+    }
+    
+    return -1;
+}
+
+- (XMCircleSection *) sectionForIndex:(int)index
+{
+    
+    int sectionIndex = 0;
+    for (XMCircleSection *section in self.trackSections) {
+        if (sectionIndex == index && !section.hidden) {
+            return section;
+        }
+        if (!section.hidden) {
+            sectionIndex++;
+        }
+    }
+    
+    return nil;
+}
+
+@end
+
+
 @interface XMCircleControlView ()
 
 @property (nonatomic) CGFloat rotation;
 @property (nonatomic) CGFloat angle;
+@property (nonatomic) CGFloat distance;
 
 @property (nonatomic) float activeSectionStartValue;
 
@@ -70,9 +133,11 @@
     self.rotationGestureRecognizer.midPoint = [self boundsCenter];
     self.outerRadius = [self maximumRadius];
     
-    for (XMCircleSection *section in self.circleSections) {
-        XMCircleSectionLayer *csl = section.layer;
-        csl.frame = self.bounds;
+    for (XMCircleTrack *track in self.circleTracks) {
+        for (XMCircleSection *section in track.trackSections) {
+            XMCircleSectionLayer *csl = section.layer;
+            csl.frame = self.bounds;
+        }
     }
     
     [self updateSectionLayers];
@@ -100,226 +165,295 @@
 
 #pragma mark - Private Methods
 
-- (void) addSectionLayers
+- (void) createSectionLayers
 {
-
-    for (XMCircleSection *section in self.circleSections) {
-        XMCircleSectionLayer *circleSectionLayer = [XMCircleSectionLayer new];
-        circleSectionLayer.outerRadius = self.outerRadius;
-        circleSectionLayer.innerRadius = self.innerRadius;
-
-        circleSectionLayer.color =  section.color;
-
-        [self.layer addSublayer:circleSectionLayer];
-        section.layer = circleSectionLayer;
+    //remove old layers
+    for (XMCircleTrack *track in self.circleTracks) {
+        for (XMCircleSection *section in track.trackSections) {
+            [section.layer removeFromSuperlayer];
+        }
     }
+    
+    //add new layers
+    for (XMCircleTrack *track in self.circleTracks) {
+        for (XMCircleSection *section in track.trackSections) {
+            XMCircleSectionLayer *circleSectionLayer = [XMCircleSectionLayer new];
+            circleSectionLayer.outerRadius = self.outerRadius;
+            circleSectionLayer.innerRadius = self.innerRadius;
 
+            circleSectionLayer.color =  section.color;
+
+            [self.layer addSublayer:circleSectionLayer];
+            section.layer = circleSectionLayer;
+        }
+    }
+    [self updateSectionLayers];
 }
+
+
 
 - (void) updateSectionLayers
 {
 
-    int sectionCount = 0;
-    CGFloat currentAngle = self.startAngle;
-    
-    for (XMCircleSection *section in self.circleSections) {
-        XMCircleSectionLayer *sectionLayer = section.layer;
-       
-        if (self.activeSection) {
-            //The is an active section;
+    int trackCount = 0;
+    for (XMCircleTrack *track in self.circleTracks) {
+        
+        int sectionCount = 0;
+        CGFloat currentAngle = track.startAngle;
+        
+        for (XMCircleSection *section in track.trackSections) {
             
-            int indexOfActiveSection = (int) [self indexForSection:self.activeSection] ;
-            int indexOfCurrentSection = (int) [self indexForSection:section];
-            
-            
-            
+            XMCircleSectionLayer *sectionLayer = section.layer;
+           
+        
             CGFloat activeSectionAngle;
             CGFloat activeSectionStartAngle;
-
             
-
-            activeSectionAngle = (self.activeSection.value * M_PI * 2);
-            activeSectionStartAngle = (self.angle + self.startAngle) - activeSectionAngle;
-
+            if (self.activeSection) {
+                activeSectionAngle = (self.activeSection.value * M_PI * 2);
+                activeSectionStartAngle = (self.angle + track.startAngle) - activeSectionAngle;
+            }
+            
             
             if (section == self.activeSection) {
+                //Active Track, Active Section
                 
-                //Animate the active section
-                [sectionLayer animateProperties:@{@"startAngle":@(activeSectionStartAngle), @"angle":@(activeSectionAngle)} inTime:self.animationSpeed];
+                [sectionLayer animateProperties:@{@"startAngle":@(activeSectionStartAngle),
+                                                  @"angle":@(activeSectionAngle),
+                                                  @"innerRadius":@(self.innerRadius),
+                                                  @"outerRadius":@(self.outerRadius)}
+                                         inTime:self.animationSpeed];
                 
             } else {
                 
-                //Animate all other sections (to hide them)
-                float startAngle = activeSectionStartAngle;
-                if (indexOfCurrentSection > indexOfActiveSection) {
-                    startAngle += activeSectionAngle;
-                }
                 
-                [sectionLayer animateProperties:@{@"startAngle":@(startAngle), @"angle":@(0)} inTime:self.animationSpeed];
+                
+                
+                if (track == self.activeTrack) {
+                    //Active Track, Other section.
+                    
+                    
+                    int indexOfActiveSection = (int) [track indexForSection:self.activeSection] ;
+                    int indexOfCurrentSection = (int) [track indexForSection:section];
+                    
+                
+                    CGFloat startAngle = activeSectionStartAngle;
+                    if (indexOfCurrentSection > indexOfActiveSection) {
+                        startAngle += activeSectionAngle;
+                    }
+                    
+                    CGFloat innerRadius;
+                    CGFloat outerRadius;
+                    if ([self trackForSection:section] == track) {
+                        innerRadius = self.innerRadius;
+                        outerRadius = self.outerRadius;
+                    } else {
+                        innerRadius = self.innerRadius;
+                        outerRadius = self.innerRadius;
+                    }
+                    
+                    
+                    [sectionLayer animateProperties:@{@"startAngle":@(startAngle),
+                                                      @"angle":@(0),
+                                                      @"innerRadius":@(innerRadius),
+                                                      @"outerRadius":@(outerRadius)}
+                                             inTime:self.animationSpeed];
+            
+                } else {
+                    //Other Track, Other Section
+                    
+                    CGFloat sectionAngle = (section.hidden) ? 0 : [track anglePerSection];
+                    
+                    CGFloat innerRadius = trackCount * [self trackWidth] + self.innerRadius;
+                    CGFloat outerRadius = innerRadius + [self trackWidth];
+                    
+                    if (self.activeTrack){
+                        //There is currently an other active section. So we need to shrink this track;
+                        
+                        if (trackCount < [self indexForTrack:self.activeTrack]) {
+                            innerRadius = self.innerRadius;
+                            outerRadius = self.innerRadius;
+                        } else {
+                            innerRadius = self.outerRadius;
+                            outerRadius = self.outerRadius;
+                        }
+                    }
+                    
+                    
+                    
+                    [sectionLayer animateProperties:@{@"startAngle":@(currentAngle),
+                                                      @"angle":@(sectionAngle),
+                                                      @"innerRadius":@(innerRadius),
+                                                      @"outerRadius":@(outerRadius)}
+                                             inTime:self.animationSpeed];
+                    
+                    currentAngle += sectionAngle;
+                }
             }
-        } else {
-            //Animate all sections to distribute the sections.
             
-            CGFloat sectionAngle = (section.hidden) ? 0 : [self anglePerSection];
-
-            [sectionLayer animateProperties:@{@"startAngle":@(currentAngle), @"angle":@(sectionAngle)} inTime:self.animationSpeed];
+   
             
-            currentAngle += sectionAngle;
+            sectionCount++;
         }
         
-        sectionCount++;
+        trackCount++;
     }
-
  }
 
-- (int) numberOfVisibleSections
+
+
+
+- (void) rotationGesture:(XMOneFingerRotationGestureRecognizer *)gesture
 {
-    
-    int numberOfVisibleSections = 0;
-    
-    for (XMCircleSection *section in self.circleSections) {
-        if (!section.hidden) numberOfVisibleSections++;
+
+
+    self.distance = gesture.distance - self.innerRadius;
+
+    if (gesture.state == UIGestureRecognizerStateBegan) {
+        self.activeTrack = [self trackForDistance:self.distance];
     }
     
-    return numberOfVisibleSections;
-   
+    if (gesture.state == UIGestureRecognizerStateBegan || gesture.state == UIGestureRecognizerStateChanged) {
+
+        if (self.activeTrack) {
+        
+            self.angle = gesture.angle - self.activeTrack.startAngle;
+            if (self.angle < 0) self.angle += M_PI * 2;
+            if (self.angle > M_PI*2) self.angle -= M_PI * 2;
+            
+
+            
+            if (gesture.state == UIGestureRecognizerStateBegan) {
+                
+                self.activeSection = [self.activeTrack sectionForAngle:self.angle];
+                if (self.activeSection) {
+                    self.activeSectionStartValue = self.activeSection.value;
+                    self.animationSpeed = self.touchDownSpeed;
+                    [self updateSectionLayers];
+                }
+
+            } else
+            
+            if (gesture.state ==UIGestureRecognizerStateChanged) {
+                if (self.activeSection) {
+                    float sectionValue = self.activeSection.value;
+                    
+                    sectionValue += (gesture.rotation / (M_PI * 2));
+                    
+                    if (self.activeSection.continuous) {
+                        sectionValue = (sectionValue > 1) ? sectionValue - 1 : sectionValue;
+                        sectionValue = (sectionValue < 0) ? sectionValue + 1 : sectionValue;
+                    } else {
+                        sectionValue = (sectionValue > 1) ? 1 : sectionValue;
+                        sectionValue = (sectionValue < 0) ? 0 : sectionValue;
+                    }
+                    
+                    
+                    self.activeSection.value = sectionValue;
+
+                    [self sectionChanged:self.activeSection];
+                    
+                    self.animationSpeed = 0;
+                    [self updateSectionLayers];
+                }
+                
+            }
+            
+        }
+        
+    } else
+        
+    if (gesture.state == UIGestureRecognizerStateEnded) {
+        self.animationSpeed = self.touchUpSpeed;
+        self.activeTrack = nil;
+        self.activeSection = nil;
+        [self updateSectionLayers];
+    }
+    
 }
 
-- (CGFloat) anglePerSection
+- (int) numberOfVisibleTracks
 {
-    return self.availableAngle / [self numberOfVisibleSections];
+    int numberOfVisibleTracks = 0;
+    
+    for (XMCircleTrack *track in self.circleTracks) {
+        if (!track.hidden) numberOfVisibleTracks++;
+    }
+    
+    return numberOfVisibleTracks;
 }
 
-- (XMCircleSection *) sectionForAngle:(float)angle
+- (CGFloat) trackWidth
 {
+    return (self.outerRadius - self.innerRadius) / [self numberOfVisibleTracks];
+}
+
+- (XMCircleTrack *)trackForDistance:(CGFloat)distance
+{
+    int trackIndex = distance / [self trackWidth];
     
-    int sectionIndex = angle / [self anglePerSection];
-    
-    if (sectionIndex < [self numberOfVisibleSections]) return [self sectionForIndex:sectionIndex];
+    if (trackIndex < [self numberOfVisibleTracks]) return [self trackForIndex:trackIndex];
     
     return nil;
-    
 }
 
-- (int) indexForSection:(XMCircleSection *)sectionToFind;
+- (XMCircleTrack *)trackForIndex:(int)index
 {
-    
+    int trackIndex = 0;
+    for (XMCircleTrack *track in self.circleTracks) {
+        if (trackIndex == index && !track.hidden) {
+            return track;
+        }
+        if (!track.hidden) {
+            trackIndex++;
+        }
+    }
+    return nil;
+}
+
+- (int) indexForTrack:(XMCircleTrack *)trackToFind
+{
     int index = 0;
     
-    for (XMCircleSection *section in self.circleSections) {
-        if (section == sectionToFind) return index;
-        if (!section.hidden) index++;
+    for (XMCircleTrack *track in self.circleTracks) {
+        if (track == trackToFind) return index;
+        if (!track.hidden) index++;
     }
     
     return -1;
 }
 
-- (XMCircleSection *) sectionForIndex:(int)index
+- (XMCircleTrack *) trackForSection:(XMCircleSection *)section;
 {
-    
-    int sectionIndex = 0;
-    for (XMCircleSection *section in self.circleSections) {
-        if (sectionIndex == index && !section.hidden) {
-            return section;
-        }
-        if (!section.hidden) {
-            sectionIndex++;
+    for (XMCircleTrack *track in self.circleTracks) {
+        if ([track.trackSections containsObject:section]) {
+            return track;
         }
     }
-     
     return nil;
-}
-
-- (void) rotationGesture:(XMOneFingerRotationGestureRecognizer *)gesture
-{
-
-    self.angle = gesture.angle - self.startAngle;
-    if (self.angle < 0) self.angle += M_PI * 2;
-    if (self.angle > M_PI*2) self.angle -= M_PI * 2;
-
-    
-    if (gesture.state == UIGestureRecognizerStateBegan) {
-        self.activeSection = [self sectionForAngle:self.angle];
-        if (self.activeSection) {
-            self.activeSectionStartValue = self.activeSection.value;
-            self.animationSpeed = self.touchDownSpeed;
-            [self updateSectionLayers];
-        }
-
-    } else
-    
-    if (gesture.state ==UIGestureRecognizerStateChanged) {
-        if (self.activeSection) {
-            float sectionValue = self.activeSection.value;
-            
-            sectionValue += (gesture.rotation / (M_PI * 2));
-            
-            if (self.activeSection.continuous) {
-                sectionValue = (sectionValue > 1) ? sectionValue - 1 : sectionValue;
-                sectionValue = (sectionValue < 0) ? sectionValue + 1 : sectionValue;
-            } else {
-                sectionValue = (sectionValue > 1) ? 1 : sectionValue;
-                sectionValue = (sectionValue < 0) ? 0 : sectionValue;
-            }
-            
-            
-            self.activeSection.value = sectionValue;
-
-            [self sectionChanged:self.activeSection];
-            
-            self.animationSpeed = 0;
-            [self updateSectionLayers];
-        }
-        
-    } else
-    
-    if (gesture.state == UIGestureRecognizerStateEnded) {
-        self.animationSpeed = self.touchUpSpeed;
-        self.activeSection = nil;
-        [self updateSectionLayers];
-    }
 }
 
 
 #pragma mark - Getters & Setters
 
-@synthesize circleSections = _circleSections;
 
-- (NSArray *)circleSections
+@synthesize circleTracks = _circleTracks;
+
+- (NSArray *)circleTracks
 {
-    if (!_circleSections) _circleSections = [NSArray new];
-    return _circleSections;
+    if (!_circleTracks) _circleTracks = [NSArray new];
+    return _circleTracks;
 }
 
-- (void)setCircleSections:(NSArray *)circleSections
+- (void)setCircleTracks:(NSArray *)circleTracks
 {
-    
-    
-    //remove old layers
-    for (XMCircleSection *section in _circleSections) {
-        [section.layer removeFromSuperlayer];
-    }
-    
-    //set new sections
-    _circleSections = circleSections;
-    
-    //add layers
-    [self addSectionLayers];
-    
-    //set angles
-    [self updateSectionLayers];
-    
-    
+    _circleTracks = circleTracks;
+    [self createSectionLayers];
 }
 
 - (void)setOuterRadius:(CGFloat)outerRadius
 {
     _outerRadius = outerRadius;
-    
-    for (XMCircleSection *section in self.circleSections) {
-        XMCircleSectionLayer *csl = section.layer;
-        csl.outerRadius = outerRadius;
-    }
     
     self.rotationGestureRecognizer.outerRadius = outerRadius;
     [self updateSectionLayers];
@@ -328,10 +462,6 @@
 - (void)setInnerRadius:(CGFloat)innerRadius
 {
     _innerRadius = innerRadius;
-    for (XMCircleSection *section in self.circleSections) {
-        XMCircleSectionLayer *csl = section.layer;
-        csl.innerRadius = innerRadius;
-    }
     
     self.rotationGestureRecognizer.outerRadius = innerRadius;
     [self updateSectionLayers];

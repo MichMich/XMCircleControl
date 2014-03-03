@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4C02A7DB18C530B2006AC5D3 /* XMHSBControlView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4C02A7DA18C530B2006AC5D3 /* XMHSBControlView.m */; };
 		4C6679B218BF6FFB00BCE174 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6679B118BF6FFB00BCE174 /* Foundation.framework */; };
 		4C6679B418BF6FFB00BCE174 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6679B318BF6FFB00BCE174 /* CoreGraphics.framework */; };
 		4C6679B618BF6FFB00BCE174 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6679B518BF6FFB00BCE174 /* UIKit.framework */; };
@@ -38,6 +39,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4C02A7D918C530B2006AC5D3 /* XMHSBControlView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMHSBControlView.h; sourceTree = "<group>"; };
+		4C02A7DA18C530B2006AC5D3 /* XMHSBControlView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMHSBControlView.m; sourceTree = "<group>"; };
 		4C6679AE18BF6FFB00BCE174 /* XMCircleControl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = XMCircleControl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4C6679B118BF6FFB00BCE174 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		4C6679B318BF6FFB00BCE174 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -133,6 +136,8 @@
 				4C6679B818BF6FFB00BCE174 /* Supporting Files */,
 				4CE8D10218C257D0006C97A5 /* XMRGBControlView.h */,
 				4CE8D10318C257D0006C97A5 /* XMRGBControlView.m */,
+				4C02A7D918C530B2006AC5D3 /* XMHSBControlView.h */,
+				4C02A7DA18C530B2006AC5D3 /* XMHSBControlView.m */,
 				4C6679E618BF723F00BCE174 /* XMCircleControlView.h */,
 				4C6679E718BF723F00BCE174 /* XMCircleControlView.m */,
 				4C677F3E18BFA4CF00C3645D /* XMCircleSectionLayer.h */,
@@ -272,6 +277,7 @@
 				4CA0504118C4AB5C00899FC9 /* main.m in Sources */,
 				4CA0504218C4AB7100899FC9 /* AppDelegate.m in Sources */,
 				4CA0504318C4AB7200899FC9 /* ViewController.m in Sources */,
+				4C02A7DB18C530B2006AC5D3 /* XMHSBControlView.m in Sources */,
 				4CA0504418C4AB7500899FC9 /* XMRGBControlView.m in Sources */,
 				4CA0504518C4AB7800899FC9 /* XMCircleControlView.m in Sources */,
 				4CA0504618C4AB7A00899FC9 /* XMCircleSectionLayer.m in Sources */,

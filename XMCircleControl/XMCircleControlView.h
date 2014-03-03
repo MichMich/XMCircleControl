@@ -12,6 +12,8 @@
 #define RAD2DEG(radians) ((radians) * (180.0 / M_PI))
 #define DEG2RAD(angle) ((angle) / 180.0 * M_PI)
 
+
+
 @interface XMCircleSection : NSObject
 
 @property (strong, nonatomic) NSString *name;
@@ -27,15 +29,31 @@
 
 
 
+@interface XMCircleTrack : NSObject
+
+@property (nonatomic) CGFloat startAngle;
+@property (nonatomic) CGFloat availableAngle;
+
+@property (nonatomic, strong) NSArray *trackSections;
+@property (nonatomic) BOOL hidden;
+
+- (int) numberOfVisibleSections;
+- (CGFloat) anglePerSection;
+- (int) indexForSection:(XMCircleSection *)sectionToFind;
+- (XMCircleSection *) sectionForIndex:(int)index;
+
+@end
+
 
 
 @interface XMCircleControlView : UIView
 
-@property (strong, nonatomic) NSArray *circleSections;
+// @property (strong, nonatomic) NSArray *circleSections;
+
+@property (nonatomic, strong) NSArray *circleTracks;
 
 
-@property (nonatomic) CGFloat startAngle;
-@property (nonatomic) CGFloat availableAngle;
+
 
 @property (nonatomic) CGFloat innerRadius;
 @property (nonatomic) CGFloat outerRadius;
@@ -43,6 +61,7 @@
 @property (nonatomic) NSTimeInterval touchDownSpeed;
 @property (nonatomic) NSTimeInterval touchUpSpeed;
 
+@property (strong, nonatomic) XMCircleTrack *activeTrack;
 @property (strong, nonatomic) XMCircleSection *activeSection;
 
 - (void)sectionChanged:(XMCircleSection *)section;

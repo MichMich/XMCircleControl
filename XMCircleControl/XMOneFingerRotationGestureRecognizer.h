@@ -17,6 +17,7 @@
 
 @property (nonatomic) CGFloat rotation;
 @property (nonatomic) CGFloat angle;
+@property (nonatomic) CGFloat distance;
 
 - (id) initWithMidPoint:(CGPoint)midPoint innerRadius:(float)innerRadius outerRadius:(float)outerRadius target:(id)target action:(SEL)action;
 

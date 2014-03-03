@@ -8,10 +8,12 @@
 
 #import "ViewController.h"
 #import "XMRGBControlView.h"
+#import "XMHSBControlView.h"
 
 @interface ViewController ()
 
-@property (strong, nonatomic) XMRGBControlView *colorControlView;
+@property (strong, nonatomic) XMRGBControlView *rgbColorControlView;
+@property (strong, nonatomic) XMHSBControlView *hsbColorControlView;
 
 @end
 
@@ -24,12 +26,50 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
-    self.colorControlView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.colorControlView];
+  
+    self.rgbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.hsbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [self.view addSubview:self.rgbColorControlView];
+    [self.view addSubview:self.hsbColorControlView];
     
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[ccv]-|" options:0 metrics:nil views:@{@"ccv":self.colorControlView}]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.colorControlView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:self.colorControlView attribute:NSLayoutAttributeWidth multiplier:1 constant:0]];
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.colorControlView attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeCenterY multiplier:1 constant:0]];
+    NSDictionary *views = @{@"rgb":self.rgbColorControlView,@"hsb":self.hsbColorControlView};
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[rgb]-40-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[hsb]-40-|" options:0 metrics:nil views:views]];
+
+    
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.rgbColorControlView
+                                                          attribute:NSLayoutAttributeHeight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeHeight
+                                                         multiplier:0.5
+                                                           constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.rgbColorControlView
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1
+                                                           constant:0]];
+     
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.hsbColorControlView
+                                                          attribute:NSLayoutAttributeHeight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeHeight
+                                                         multiplier:0.5
+                                                           constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.hsbColorControlView
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1
+                                                           constant:0]];
     
 }
 
@@ -39,21 +79,32 @@
     // Dispose of any resources that can be recreated.
 }
 
-- (XMRGBControlView *)colorControlView
+- (XMRGBControlView *)rgbColorControlView
 {
-    if (!_colorControlView) {
+    if (!_rgbColorControlView) {
         
-        _colorControlView = [XMRGBControlView new];
-        _colorControlView.backgroundColor = [UIColor blackColor];
-        _colorControlView.startAngle = DEG2RAD(90);
-        _colorControlView.availableAngle = DEG2RAD(360);
-        _colorControlView.innerRadius = 70;
+        _rgbColorControlView = [XMRGBControlView new];
+        _rgbColorControlView.innerRadius = 30;
         
-        _colorControlView.touchDownSpeed = 0.25;
-        _colorControlView.touchUpSpeed = 0.5;
+        _rgbColorControlView.touchDownSpeed = 0.25;
+        _rgbColorControlView.touchUpSpeed = 0.5;
         
     }
-    return _colorControlView;
+    return _rgbColorControlView;
+}
+
+- (XMHSBControlView *)hsbColorControlView
+{
+    if (!_hsbColorControlView) {
+        
+        _hsbColorControlView = [XMHSBControlView new];
+        _hsbColorControlView.innerRadius = 30;
+        
+        _hsbColorControlView.touchDownSpeed = 0.25;
+        _hsbColorControlView.touchUpSpeed = 0.5;
+        
+    }
+    return _hsbColorControlView;
 }
 
 @end
