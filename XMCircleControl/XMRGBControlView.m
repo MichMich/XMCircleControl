@@ -10,9 +10,9 @@
 
 @interface XMRGBControlView()
 
-@property (nonatomic,strong) XMCircleSection *redSection;
-@property (nonatomic,strong) XMCircleSection *greenSection;
-@property (nonatomic,strong) XMCircleSection *blueSection;
+@property (nonatomic,strong) XMCircleSectionLayer *redSection;
+@property (nonatomic,strong) XMCircleSectionLayer *greenSection;
+@property (nonatomic,strong) XMCircleSectionLayer *blueSection;
 
 @end
 
@@ -50,13 +50,17 @@
     [self setNeedsDisplay];
 }
 
-- (void)sectionChanged:(XMCircleSection *)section
+- (void)sectionChanged:(XMCircleSectionLayer *)section
 {
     [self updateColors];
 }
 
 - (void)drawRect:(CGRect)rect
 {
+    CGContextRef ctx = UIGraphicsGetCurrentContext();
+    CGContextClearRect(ctx, rect);
+    
+    [super drawRect:rect];
     
     float red = 0.1 + self.redSection.value * 0.9;
     float green = 0.1 + self.greenSection.value * 0.9;
@@ -73,20 +77,20 @@
 }
 
 
-- (XMCircleSection *)redSection
+- (XMCircleSectionLayer *)redSection
 {
     if (!_redSection) {
-        _redSection = [XMCircleSection new];
+        _redSection = [XMCircleSectionLayer new];
         _redSection.name = @"Red";
         _redSection.value = 1;
     }
     return _redSection;
 }
 
-- (XMCircleSection *)greenSection
+- (XMCircleSectionLayer *)greenSection
 {
     if (!_greenSection) {
-        _greenSection = [XMCircleSection new];
+        _greenSection = [XMCircleSectionLayer new];
         _greenSection.name = @"Green";
         _greenSection.value = 1;
     }
@@ -94,10 +98,10 @@
 }
 
 
-- (XMCircleSection *)blueSection
+- (XMCircleSectionLayer *)blueSection
 {
     if (!_blueSection) {
-        _blueSection = [XMCircleSection new];
+        _blueSection = [XMCircleSectionLayer new];
         _blueSection.name = @"Blue";
         _blueSection.value = 1;
     }

@@ -10,9 +10,9 @@
 
 @interface XMHSBControlView ()
 
-@property (nonatomic,strong) XMCircleSection *hueSection;
-@property (nonatomic,strong) XMCircleSection *saturationSection;
-@property (nonatomic,strong) XMCircleSection *brightnessSection;
+@property (nonatomic,strong) XMCircleSectionLayer *hueSection;
+@property (nonatomic,strong) XMCircleSectionLayer *saturationSection;
+@property (nonatomic,strong) XMCircleSectionLayer *brightnessSection;
 
 @end
 
@@ -56,58 +56,40 @@
     self.saturationSection.color = [UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:1 alpha:1];
     self.brightnessSection.color = [UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:brightness alpha:1];
     
-    //[self setNeedsDisplay];
 }
 
-- (void)sectionChanged:(XMCircleSection *)section
+- (void)sectionChanged:(XMCircleSectionLayer *)section
 {
     [self updateColors];
 }
 
-/*
-- (void)drawRect:(CGRect)rect
-{
-    
-
-    float saturation = 0.1 + self.saturationSection.value * 0.9;
-    float brightness = 0.1 + self.brightnessSection.value * 0.9;
-    
-    [[UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:brightness alpha:1] setFill];
-    
-    UIBezierPath *circle = [UIBezierPath bezierPathWithArcCenter:[self boundsCenter] radius:self.innerRadius - 1 startAngle:0 endAngle:M_PI*2 clockwise:YES];
-    [circle appendPath:[UIBezierPath bezierPathWithArcCenter:[self boundsCenter] radius:self.innerRadius - 20 startAngle:0 endAngle:M_PI*2 clockwise:YES]];
-    
-    circle.usesEvenOddFillRule = YES;
-    [circle fill];
-    
-}
- */
 
 
-- (XMCircleSection *)hueSection
+
+- (XMCircleSectionLayer *)hueSection
 {
     if (!_hueSection) {
-        _hueSection = [XMCircleSection new];
+        _hueSection = [XMCircleSectionLayer new];
         _hueSection.name = @"Hue";
         _hueSection.value = 1;
     }
     return _hueSection;
 }
 
-- (XMCircleSection *)saturationSection
+- (XMCircleSectionLayer *)saturationSection
 {
     if (!_saturationSection) {
-        _saturationSection = [XMCircleSection new];
+        _saturationSection = [XMCircleSectionLayer new];
         _saturationSection.name = @"Saturation";
         _saturationSection.value = 1;
     }
     return _saturationSection;
 }
 
-- (XMCircleSection *)brightnessSection
+- (XMCircleSectionLayer *)brightnessSection
 {
     if (!_brightnessSection) {
-        _brightnessSection = [XMCircleSection new];
+        _brightnessSection = [XMCircleSectionLayer new];
         _brightnessSection.name = @"Brightness";
         _brightnessSection.value = 1;
     }

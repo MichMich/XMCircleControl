@@ -34,10 +34,11 @@
     [self.view addSubview:self.hsbColorControlView];
     
     NSDictionary *views = @{@"rgb":self.rgbColorControlView,@"hsb":self.hsbColorControlView};
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[hsb(300)]-[rgb]-40-|" options:0 metrics:nil views:views]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[rgb]-40-|" options:0 metrics:nil views:views]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[hsb]-40-|" options:0 metrics:nil views:views]];
 
-    
+/*
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.rgbColorControlView
                                                           attribute:NSLayoutAttributeHeight
@@ -70,7 +71,7 @@
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1
                                                            constant:0]];
-    
+*/
 }
 
 - (void)didReceiveMemoryWarning

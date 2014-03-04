@@ -32,6 +32,7 @@
         self.innerRadius = other.innerRadius;
         self.outerRadius = other.outerRadius;
         self.color = other.color;
+        self.value = other.value;
     }
     return self;
 }

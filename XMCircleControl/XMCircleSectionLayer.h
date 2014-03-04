@@ -18,7 +18,7 @@
 
 @property (nonatomic, strong) UIColor *color;
 
-
+@property (nonatomic) float value;
 
 -(void)animateProperty:(NSString *)property toValue:(float)value inTime:(NSTimeInterval)time;
 -(void)animateProperty:(NSString *)property fromValue:(float)fromValue toValue:(float)toValue inTime:(NSTimeInterval)time;

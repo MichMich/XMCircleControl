@@ -13,15 +13,6 @@
 
 
 
-@implementation XMCircleSection
-
-- (void)setColor:(UIColor *)color
-{
-    _color = color;
-    self.layer.color = color;
-}
-
-@end
 
 @implementation XMCircleTrack
 
@@ -30,7 +21,7 @@
     
     int numberOfVisibleSections = 0;
     
-    for (XMCircleSection *section in self.trackSections) {
+    for (XMCircleSectionLayer *section in self.trackSections) {
         if (!section.hidden) numberOfVisibleSections++;
     }
     
@@ -43,7 +34,7 @@
     return self.availableAngle / [self numberOfVisibleSections];
 }
 
-- (XMCircleSection *) sectionForAngle:(float)angle
+- (XMCircleSectionLayer *) sectionForAngle:(float)angle
 {
     
     int sectionIndex = angle / [self anglePerSection];
@@ -54,12 +45,12 @@
     
 }
 
-- (int) indexForSection:(XMCircleSection *)sectionToFind
+- (int) indexForSection:(XMCircleSectionLayer *)sectionToFind
 {
     
     int index = 0;
     
-    for (XMCircleSection *section in self.trackSections) {
+    for (XMCircleSectionLayer *section in self.trackSections) {
         if (section == sectionToFind) return index;
         if (!section.hidden) index++;
     }
@@ -67,11 +58,11 @@
     return -1;
 }
 
-- (XMCircleSection *) sectionForIndex:(int)index
+- (XMCircleSectionLayer *) sectionForIndex:(int)index
 {
     
     int sectionIndex = 0;
-    for (XMCircleSection *section in self.trackSections) {
+    for (XMCircleSectionLayer *section in self.trackSections) {
         if (sectionIndex == index && !section.hidden) {
             return section;
         }
@@ -134,9 +125,8 @@
     self.outerRadius = [self maximumRadius];
     
     for (XMCircleTrack *track in self.circleTracks) {
-        for (XMCircleSection *section in track.trackSections) {
-            XMCircleSectionLayer *csl = section.layer;
-            csl.frame = self.bounds;
+        for (XMCircleSectionLayer *section in track.trackSections) {
+            section.frame = self.bounds;
         }
     }
     
@@ -146,7 +136,7 @@
 
 #pragma mark - Public Methods
 
-- (void)sectionChanged:(XMCircleSection *)section
+- (void)sectionChanged:(XMCircleSectionLayer *)section
 {
     //ABSTRACT FUNCTION
     NSLog(@"%@ changed: %f", section.name, section.value);
@@ -165,26 +155,27 @@
 
 #pragma mark - Private Methods
 
-- (void) createSectionLayers
+- (void) removeSectionLayers
 {
     //remove old layers
     for (XMCircleTrack *track in self.circleTracks) {
-        for (XMCircleSection *section in track.trackSections) {
-            [section.layer removeFromSuperlayer];
+        for (XMCircleSectionLayer *section in track.trackSections) {
+            [section removeFromSuperlayer];
         }
     }
-    
+}
+
+- (void) createSectionLayers
+{
     //add new layers
     for (XMCircleTrack *track in self.circleTracks) {
-        for (XMCircleSection *section in track.trackSections) {
-            XMCircleSectionLayer *circleSectionLayer = [XMCircleSectionLayer new];
-            circleSectionLayer.outerRadius = self.outerRadius;
-            circleSectionLayer.innerRadius = self.innerRadius;
+        for (XMCircleSectionLayer *section in track.trackSections) {
+            section.outerRadius = self.outerRadius;
+            section.innerRadius = self.innerRadius;
 
-            circleSectionLayer.color =  section.color;
+            section.color =  section.color;
 
-            [self.layer addSublayer:circleSectionLayer];
-            section.layer = circleSectionLayer;
+            [self.layer addSublayer:section];
         }
     }
     [self updateSectionLayers];
@@ -201,9 +192,7 @@
         int sectionCount = 0;
         CGFloat currentAngle = track.startAngle;
         
-        for (XMCircleSection *section in track.trackSections) {
-            
-            XMCircleSectionLayer *sectionLayer = section.layer;
+        for (XMCircleSectionLayer *section in track.trackSections) {
            
         
             CGFloat activeSectionAngle;
@@ -218,7 +207,7 @@
             if (section == self.activeSection) {
                 //Active Track, Active Section
                 
-                [sectionLayer animateProperties:@{@"startAngle":@(activeSectionStartAngle),
+                [section animateProperties:@{@"startAngle":@(activeSectionStartAngle),
                                                   @"angle":@(activeSectionAngle),
                                                   @"innerRadius":@(self.innerRadius),
                                                   @"outerRadius":@(self.outerRadius)}
@@ -253,7 +242,7 @@
                     }
                     
                     
-                    [sectionLayer animateProperties:@{@"startAngle":@(startAngle),
+                    [section animateProperties:@{@"startAngle":@(startAngle),
                                                       @"angle":@(0),
                                                       @"innerRadius":@(innerRadius),
                                                       @"outerRadius":@(outerRadius)}
@@ -281,7 +270,7 @@
                     
                     
                     
-                    [sectionLayer animateProperties:@{@"startAngle":@(currentAngle),
+                    [section animateProperties:@{@"startAngle":@(currentAngle),
                                                       @"angle":@(sectionAngle),
                                                       @"innerRadius":@(innerRadius),
                                                       @"outerRadius":@(outerRadius)}
@@ -340,15 +329,9 @@
                     
                     sectionValue += (gesture.rotation / (M_PI * 2));
                     
-                    if (self.activeSection.continuous) {
-                        sectionValue = (sectionValue > 1) ? sectionValue - 1 : sectionValue;
-                        sectionValue = (sectionValue < 0) ? sectionValue + 1 : sectionValue;
-                    } else {
-                        sectionValue = (sectionValue > 1) ? 1 : sectionValue;
-                        sectionValue = (sectionValue < 0) ? 0 : sectionValue;
-                    }
-                    
-                    
+                    sectionValue = (sectionValue > 1) ? 1 : sectionValue;
+                    sectionValue = (sectionValue < 0) ? 0 : sectionValue;
+                  
                     self.activeSection.value = sectionValue;
 
                     [self sectionChanged:self.activeSection];
@@ -423,7 +406,7 @@
     return -1;
 }
 
-- (XMCircleTrack *) trackForSection:(XMCircleSection *)section;
+- (XMCircleTrack *) trackForSection:(XMCircleSectionLayer *)section;
 {
     for (XMCircleTrack *track in self.circleTracks) {
         if ([track.trackSections containsObject:section]) {
@@ -447,6 +430,7 @@
 
 - (void)setCircleTracks:(NSArray *)circleTracks
 {
+    [self removeSectionLayers];
     _circleTracks = circleTracks;
     [self createSectionLayers];
 }
