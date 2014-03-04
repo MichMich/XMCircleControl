@@ -10,6 +10,10 @@
 
 @interface XMHSBControlView ()
 
+@property (nonatomic,strong) XMCircleTrack *hueTrack;
+@property (nonatomic,strong) XMCircleTrack *saturationTrack;
+@property (nonatomic,strong) XMCircleTrack *brightnessTrack;
+
 @property (nonatomic,strong) XMCircleSectionLayer *hueSection;
 @property (nonatomic,strong) XMCircleSectionLayer *saturationSection;
 @property (nonatomic,strong) XMCircleSectionLayer *brightnessSection;
@@ -23,25 +27,23 @@
     self = [super init];
     if (self) {
         
-        XMCircleTrack *hueTrack = [XMCircleTrack new];
-        hueTrack.trackSections = @[self.hueSection];
-        hueTrack.startAngle = DEG2RAD(90);
-        hueTrack.availableAngle = DEG2RAD(360);
+        self.hueTrack = [XMCircleTrack new];
+        self.hueTrack.trackSections = @[self.hueSection];
+        self.hueTrack.startAngle = DEG2RAD(-90);
         
-        XMCircleTrack *saturationTrack = [XMCircleTrack new];
-        saturationTrack.trackSections = @[self.saturationSection];
-        saturationTrack.startAngle = DEG2RAD(90);
-        saturationTrack.availableAngle = DEG2RAD(360);
+        self.saturationTrack = [XMCircleTrack new];
+        self.saturationTrack.trackSections = @[self.saturationSection];
+        self.saturationTrack.startAngle = DEG2RAD(-90);
+
+        self.brightnessTrack = [XMCircleTrack new];
+        self.brightnessTrack.trackSections = @[self.brightnessSection];
+        self.brightnessTrack.startAngle = DEG2RAD(-90);
         
-        XMCircleTrack *brightnessTrack = [XMCircleTrack new];
-        brightnessTrack.trackSections = @[self.brightnessSection];
-        brightnessTrack.startAngle = DEG2RAD(90);
-        brightnessTrack.availableAngle = DEG2RAD(360);
-        
-        self.circleTracks = @[hueTrack,saturationTrack,brightnessTrack];
+        self.circleTracks = @[self.hueTrack,self.saturationTrack,self.brightnessTrack];
+        self.trackSpace = 1;
         
         [self updateColors];
-        
+        [self updateTracks];
     }
     return self;
 }
@@ -49,20 +51,27 @@
 - (void) updateColors
 {
     
-    float saturation = 0.1 + self.saturationSection.value * 0.9;
-    float brightness = 0.1 + self.brightnessSection.value * 0.9;
+    float saturation = 0.1 + self.saturationSection.value * 0.7;
+    float brightness = 0.1 + self.brightnessSection.value * 0.7;
     
     self.hueSection.color = [UIColor colorWithHue:self.hueSection.value saturation:1 brightness:1 alpha:1];
     self.saturationSection.color = [UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:1 alpha:1];
     self.brightnessSection.color = [UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:brightness alpha:1];
-    
+
+}
+
+- (void) updateTracks
+{
+    self.hueTrack.availableAngle = M_PI * 2;
+    self.saturationTrack.availableAngle = M_PI * 2 * self.saturationSection.value;
+    self.brightnessTrack.availableAngle = M_PI * 2 * self.brightnessSection.value;
 }
 
 - (void)sectionChanged:(XMCircleSectionLayer *)section
 {
     [self updateColors];
+    [self updateTracks];
 }
-
 
 
 
@@ -72,6 +81,9 @@
         _hueSection = [XMCircleSectionLayer new];
         _hueSection.name = @"Hue";
         _hueSection.value = 1;
+        _hueSection.maximumAngleWhenActive = M_PI /4;
+        _hueSection.minimumAngleWhenActive = M_PI /4;
+        _hueSection.continuous = YES;
     }
     return _hueSection;
 }

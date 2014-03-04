@@ -36,10 +36,21 @@
 
 - (XMCircleSectionLayer *) sectionForAngle:(float)angle
 {
+    // if there is no angle per section, return the first non-hidden section.
+    if ([self anglePerSection] == 0) {
+        return [self sectionForIndex:0];
+    }
     
+    //set section index.
     int sectionIndex = angle / [self anglePerSection];
     
+    //find section based on index.
     if (sectionIndex < [self numberOfVisibleSections]) return [self sectionForIndex:sectionIndex];
+    
+    // if we cant find a section, and the track has only one section, then return that section.
+    if ([self numberOfVisibleSections] == 1) {
+        return [self sectionForIndex:0];
+    }
     
     return nil;
     
@@ -200,7 +211,18 @@
             
             if (self.activeSection) {
                 activeSectionAngle = (self.activeSection.value * M_PI * 2);
+                
+                if (activeSectionAngle < self.activeSection.minimumAngleWhenActive)  activeSectionAngle = self.activeSection.minimumAngleWhenActive;
+                if (activeSectionAngle > self.activeSection.maximumAngleWhenActive && self.activeSection.maximumAngleWhenActive > 0)  activeSectionAngle = self.activeSection.maximumAngleWhenActive;
+                
                 activeSectionStartAngle = (self.angle + track.startAngle) - activeSectionAngle;
+                
+                if (self.activeSection.continuous) {
+                    activeSectionStartAngle = track.startAngle + M_PI * 2 * self.activeSection.value;
+                    if (self.activeSection.maximumAngleWhenActive > 0) {
+                        activeSectionStartAngle -= (activeSectionAngle / 2);
+                    }
+                }
             }
             
             
@@ -253,13 +275,15 @@
                     
                     CGFloat sectionAngle = (section.hidden) ? 0 : [track anglePerSection];
                     
-                    CGFloat innerRadius = trackCount * [self trackWidth] + self.innerRadius;
-                    CGFloat outerRadius = innerRadius + [self trackWidth];
+                    int trackIndex = [self indexForTrack:track];
                     
+                    CGFloat innerRadius = trackIndex * [self trackWidth] + self.innerRadius + (trackIndex * self.trackSpace);
+                    CGFloat outerRadius = (track.hidden) ? innerRadius : innerRadius + [self trackWidth];
+            
                     if (self.activeTrack){
                         //There is currently an other active section. So we need to shrink this track;
                         
-                        if (trackCount < [self indexForTrack:self.activeTrack]) {
+                        if (trackIndex < [self indexForTrack:self.activeTrack]) {
                             innerRadius = self.innerRadius;
                             outerRadius = self.innerRadius;
                         } else {
@@ -329,8 +353,13 @@
                     
                     sectionValue += (gesture.rotation / (M_PI * 2));
                     
-                    sectionValue = (sectionValue > 1) ? 1 : sectionValue;
-                    sectionValue = (sectionValue < 0) ? 0 : sectionValue;
+                    if (!self.activeSection.continuous) {
+                        if (sectionValue > 1) sectionValue = 1;
+                        if (sectionValue < 0) sectionValue = 0;
+                    } else {
+                        if (sectionValue > 1) sectionValue -= 1;
+                        if (sectionValue < 0) sectionValue += 1;
+                    }
                   
                     self.activeSection.value = sectionValue;
 
@@ -368,7 +397,10 @@
 
 - (CGFloat) trackWidth
 {
-    return (self.outerRadius - self.innerRadius) / [self numberOfVisibleTracks];
+    CGFloat availableRadius = self.outerRadius - self.innerRadius;
+    CGFloat radiusReservedForSpace = self.trackSpace * ([self numberOfVisibleTracks] - 1);
+    
+    return ((availableRadius - radiusReservedForSpace) / [self numberOfVisibleTracks]);
 }
 
 - (XMCircleTrack *)trackForDistance:(CGFloat)distance
@@ -449,6 +481,13 @@
     
     self.rotationGestureRecognizer.outerRadius = innerRadius;
     [self updateSectionLayers];
+}
+
+- (void)setActiveSection:(XMCircleSectionLayer *)activeSection
+{
+    _activeSection.active = NO;
+    _activeSection = activeSection;
+    _activeSection.active = YES;
 }
 
 @end

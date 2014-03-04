@@ -35,6 +35,8 @@
 @property (nonatomic) CGFloat innerRadius;
 @property (nonatomic) CGFloat outerRadius;
 
+@property (nonatomic) CGFloat trackSpace;
+
 @property (nonatomic) NSTimeInterval touchDownSpeed;
 @property (nonatomic) NSTimeInterval touchUpSpeed;
 

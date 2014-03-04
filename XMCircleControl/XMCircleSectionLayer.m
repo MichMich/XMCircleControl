@@ -33,6 +33,10 @@
         self.outerRadius = other.outerRadius;
         self.color = other.color;
         self.value = other.value;
+        self.active = other.active;
+        self.continuous = other.continuous;
+        self.minimumAngleWhenActive = other.minimumAngleWhenActive;
+        self.maximumAngleWhenActive = other.maximumAngleWhenActive;
     }
     return self;
 }
@@ -128,7 +132,7 @@
     CGContextAddPath(ctx, path.CGPath);
     CGContextSetFillColorWithColor(ctx, self.color.CGColor);
     CGContextFillPath(ctx);
-    
+
 }
 
 - (void)setAngle:(CGFloat)angle
@@ -142,6 +146,7 @@
     _color = color;
     [self setNeedsDisplay];
 }
+
 
 +(BOOL)needsDisplayForKey:(NSString *)key {
     if ([key isEqualToString:@"innerRadius"]||
