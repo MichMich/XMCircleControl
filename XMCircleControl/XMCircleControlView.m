@@ -98,7 +98,7 @@
 
 @property (strong, nonatomic) XMOneFingerRotationGestureRecognizer *rotationGestureRecognizer;
 
-@property (nonatomic) float animationSpeed;
+
 
 @end
 
@@ -158,11 +158,139 @@
     return CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
 }
 
-- (CGFloat)maximumRadius;
+- (CGFloat)maximumRadius
 {
     return ((self.bounds.size.width < self.bounds.size.height) ? self.bounds.size.width : self.bounds.size.height) /2;
 }
 
+- (void) updateSectionLayers
+{
+    
+    int trackCount = 0;
+    for (XMCircleTrack *track in self.circleTracks) {
+        
+        int sectionCount = 0;
+        CGFloat currentAngle = track.startAngle;
+        
+        for (XMCircleSectionLayer *section in track.trackSections) {
+            
+            
+            CGFloat activeSectionAngle = 0;
+            CGFloat activeSectionStartAngle = 0;
+            
+            if (self.activeSection) {
+                activeSectionAngle = (self.activeSection.value * M_PI * 2);
+                
+                if (activeSectionAngle < self.activeSection.minimumAngleWhenActive)  activeSectionAngle = self.activeSection.minimumAngleWhenActive;
+                if (activeSectionAngle > self.activeSection.maximumAngleWhenActive && self.activeSection.maximumAngleWhenActive > 0)  activeSectionAngle = self.activeSection.maximumAngleWhenActive;
+                
+                if (!self.activeSection.fixToStartAngle) {
+                    activeSectionStartAngle = (self.angle + track.startAngle) - activeSectionAngle;
+                } else {
+                    activeSectionStartAngle = track.startAngle;
+                }
+                
+                if (self.activeSection.continuous) {
+                    activeSectionStartAngle = track.startAngle + M_PI * 2 * self.activeSection.value;
+                    if (self.activeSection.maximumAngleWhenActive > 0) {
+                        activeSectionStartAngle -= (activeSectionAngle / 2);
+                    }
+                }
+            }
+            
+            
+            if (section == self.activeSection) {
+                //Active Track, Active Section
+                
+                [section animateProperties:@{@"startAngle":@(activeSectionStartAngle),
+                                             @"angle":@(activeSectionAngle),
+                                             @"innerRadius":@(self.innerRadius),
+                                             @"outerRadius":@(self.outerRadius)}
+                                    inTime:self.animationSpeed];
+                
+                
+            } else {
+                
+                
+                
+                
+                if (track == self.activeTrack) {
+                    //Active Track, Other section.
+                    
+                    
+                    int indexOfActiveSection = (int) [track indexForSection:self.activeSection] ;
+                    int indexOfCurrentSection = (int) [track indexForSection:section];
+                    
+                    
+                    CGFloat startAngle = activeSectionStartAngle;
+                    if (indexOfCurrentSection > indexOfActiveSection) {
+                        startAngle += activeSectionAngle;
+                    }
+                    
+                    CGFloat innerRadius;
+                    CGFloat outerRadius;
+                    if ([self trackForSection:section] == track) {
+                        innerRadius = self.innerRadius;
+                        outerRadius = self.outerRadius;
+                    } else {
+                        innerRadius = self.innerRadius;
+                        outerRadius = self.innerRadius;
+                    }
+                    
+                    
+                    [section animateProperties:@{@"startAngle":@(startAngle),
+                                                 @"angle":@(0),
+                                                 @"innerRadius":@(innerRadius),
+                                                 @"outerRadius":@(outerRadius)}
+                                        inTime:self.animationSpeed];
+                    
+                } else {
+                    //Other Track, Other Section
+                    
+                    CGFloat sectionAngle = (section.hidden) ? 0 : [track anglePerSection];
+                    
+                    int trackIndex = [self indexForTrack:track];
+                    
+                    CGFloat innerRadius = trackIndex * [self trackWidth] + self.innerRadius + (trackIndex * self.trackSpace);
+                    CGFloat outerRadius = (track.hidden) ? innerRadius : innerRadius + [self trackWidth];
+                    
+                    if ([self numberOfVisibleTracks] == 0) {
+                        innerRadius = self.innerRadius;
+                        outerRadius = innerRadius;
+                    }
+                    
+                    if (self.activeTrack){
+                        //There is currently an other active section. So we need to shrink this track;
+                        
+                        if (trackIndex < [self indexForTrack:self.activeTrack]) {
+                            innerRadius = self.innerRadius;
+                            outerRadius = self.innerRadius;
+                        } else {
+                            innerRadius = self.outerRadius;
+                            outerRadius = self.outerRadius;
+                        }
+                    }
+                    
+                    
+                    
+                    [section animateProperties:@{@"startAngle":@(currentAngle),
+                                                 @"angle":@(sectionAngle),
+                                                 @"innerRadius":@(innerRadius),
+                                                 @"outerRadius":@(outerRadius)}
+                                        inTime:self.animationSpeed];
+                    
+                    currentAngle += sectionAngle;
+                }
+            }
+            
+            
+            
+            sectionCount++;
+        }
+        
+        trackCount++;
+    }
+}
 
 #pragma mark - Private Methods
 
@@ -194,124 +322,7 @@
 
 
 
-- (void) updateSectionLayers
-{
 
-    int trackCount = 0;
-    for (XMCircleTrack *track in self.circleTracks) {
-        
-        int sectionCount = 0;
-        CGFloat currentAngle = track.startAngle;
-        
-        for (XMCircleSectionLayer *section in track.trackSections) {
-           
-        
-            CGFloat activeSectionAngle = 0;
-            CGFloat activeSectionStartAngle = 0;
-            
-            if (self.activeSection) {
-                activeSectionAngle = (self.activeSection.value * M_PI * 2);
-                
-                if (activeSectionAngle < self.activeSection.minimumAngleWhenActive)  activeSectionAngle = self.activeSection.minimumAngleWhenActive;
-                if (activeSectionAngle > self.activeSection.maximumAngleWhenActive && self.activeSection.maximumAngleWhenActive > 0)  activeSectionAngle = self.activeSection.maximumAngleWhenActive;
-                
-                activeSectionStartAngle = (self.angle + track.startAngle) - activeSectionAngle;
-                
-                if (self.activeSection.continuous) {
-                    activeSectionStartAngle = track.startAngle + M_PI * 2 * self.activeSection.value;
-                    if (self.activeSection.maximumAngleWhenActive > 0) {
-                        activeSectionStartAngle -= (activeSectionAngle / 2);
-                    }
-                }
-            }
-            
-            
-            if (section == self.activeSection) {
-                //Active Track, Active Section
-                
-                [section animateProperties:@{@"startAngle":@(activeSectionStartAngle),
-                                                  @"angle":@(activeSectionAngle),
-                                                  @"innerRadius":@(self.innerRadius),
-                                                  @"outerRadius":@(self.outerRadius)}
-                                         inTime:self.animationSpeed];
-                
-            } else {
-                
-                
-                
-                
-                if (track == self.activeTrack) {
-                    //Active Track, Other section.
-                    
-                    
-                    int indexOfActiveSection = (int) [track indexForSection:self.activeSection] ;
-                    int indexOfCurrentSection = (int) [track indexForSection:section];
-                    
-                
-                    CGFloat startAngle = activeSectionStartAngle;
-                    if (indexOfCurrentSection > indexOfActiveSection) {
-                        startAngle += activeSectionAngle;
-                    }
-                    
-                    CGFloat innerRadius;
-                    CGFloat outerRadius;
-                    if ([self trackForSection:section] == track) {
-                        innerRadius = self.innerRadius;
-                        outerRadius = self.outerRadius;
-                    } else {
-                        innerRadius = self.innerRadius;
-                        outerRadius = self.innerRadius;
-                    }
-                    
-                    
-                    [section animateProperties:@{@"startAngle":@(startAngle),
-                                                 @"angle":@(0),
-                                                 @"innerRadius":@(innerRadius),
-                                                 @"outerRadius":@(outerRadius)}
-                                        inTime:self.animationSpeed];
-            
-                } else {
-                    //Other Track, Other Section
-                    
-                    CGFloat sectionAngle = (section.hidden) ? 0 : [track anglePerSection];
-                    
-                    int trackIndex = [self indexForTrack:track];
-                    
-                    CGFloat innerRadius = trackIndex * [self trackWidth] + self.innerRadius + (trackIndex * self.trackSpace);
-                    CGFloat outerRadius = (track.hidden) ? innerRadius : innerRadius + [self trackWidth];
-            
-                    if (self.activeTrack){
-                        //There is currently an other active section. So we need to shrink this track;
-                        
-                        if (trackIndex < [self indexForTrack:self.activeTrack]) {
-                            innerRadius = self.innerRadius;
-                            outerRadius = self.innerRadius;
-                        } else {
-                            innerRadius = self.outerRadius;
-                            outerRadius = self.outerRadius;
-                        }
-                    }
-                    
-                    
-                    
-                    [section animateProperties:@{@"startAngle":@(currentAngle),
-                                                 @"angle":@(sectionAngle),
-                                                 @"innerRadius":@(innerRadius),
-                                                 @"outerRadius":@(outerRadius)}
-                                        inTime:self.animationSpeed];
-                    
-                    currentAngle += sectionAngle;
-                }
-            }
-            
-   
-            
-            sectionCount++;
-        }
-        
-        trackCount++;
-    }
- }
 
 
 

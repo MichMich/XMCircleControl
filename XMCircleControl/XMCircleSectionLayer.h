@@ -15,11 +15,13 @@
 
 @property (nonatomic) BOOL active;
 @property (nonatomic) BOOL continuous;
+@property (nonatomic) BOOL fixToStartAngle;
 
 @property (nonatomic) CGFloat startAngle;
 @property (nonatomic) CGFloat angle;
 @property (nonatomic) CGFloat maximumAngleWhenActive;
 @property (nonatomic) CGFloat minimumAngleWhenActive;
+
 
 
 

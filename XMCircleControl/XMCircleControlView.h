@@ -37,6 +37,8 @@
 
 @property (nonatomic) CGFloat trackSpace;
 
+@property (nonatomic) float animationSpeed;
+
 @property (nonatomic) NSTimeInterval touchDownSpeed;
 @property (nonatomic) NSTimeInterval touchUpSpeed;
 
@@ -46,5 +48,5 @@
 - (void)sectionChanged:(XMCircleSectionLayer *)section;
 - (CGPoint)boundsCenter;
 - (CGFloat)maximumRadius;
-
+- (void) updateSectionLayers;
 @end

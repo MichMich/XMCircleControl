@@ -35,6 +35,7 @@
         self.value = other.value;
         self.active = other.active;
         self.continuous = other.continuous;
+        self.fixToStartAngle = other.fixToStartAngle;
         self.minimumAngleWhenActive = other.minimumAngleWhenActive;
         self.maximumAngleWhenActive = other.maximumAngleWhenActive;
     }
