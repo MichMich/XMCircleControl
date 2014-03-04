@@ -31,55 +31,19 @@
     
     self.view.backgroundColor = [UIColor blackColor];
     
-  
     self.rgbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
     self.hsbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    //[self.view addSubview:self.rgbColorControlView];
+    [self.view addSubview:self.rgbColorControlView];
     [self.view addSubview:self.hsbColorControlView];
     
     NSDictionary *views = @{@"rgb":self.rgbColorControlView,@"hsb":self.hsbColorControlView};
-
-    //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[hsb(300)]-[rgb]-40-|" options:0 metrics:nil views:views]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[hsb]|" options:0 metrics:nil views:views]];
     
-    //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[rgb]-40-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[rgb]-|" options:0 metrics:nil views:views]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[hsb]-|" options:0 metrics:nil views:views]];
 
-/*
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.rgbColorControlView
-                                                          attribute:NSLayoutAttributeHeight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeHeight
-                                                         multiplier:0.5
-                                                           constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.rgbColorControlView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1
-                                                           constant:0]];
-     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.hsbColorControlView
-                                                          attribute:NSLayoutAttributeHeight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeHeight
-                                                         multiplier:0.5
-                                                           constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.hsbColorControlView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1
-                                                           constant:0]];
-*/
+    //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[hsb]-[rgb(==hsb)]-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[hsb]-|" options:0 metrics:nil views:views]];
 }
 
 - (void)didReceiveMemoryWarning
