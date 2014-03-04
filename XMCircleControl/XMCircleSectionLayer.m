@@ -123,8 +123,24 @@
 
 - (void)drawInContext:(CGContextRef)ctx
 {
-
     //Draw Section
+    
+   
+    //Draw by stroking.
+    CGFloat pathWidth = self.outerRadius - self.innerRadius;
+    CGFloat pathRadius = self.innerRadius + pathWidth / 2;
+    
+    if (pathWidth > 0) {
+        UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:[self boundsCenter] radius:pathRadius startAngle:self.startAngle endAngle:self.startAngle+self.angle clockwise:YES];
+        CGContextAddPath(ctx, path.CGPath);
+        CGContextSetLineWidth(ctx, pathWidth);
+        CGContextSetStrokeColorWithColor(ctx, self.color.CGColor);
+        CGContextStrokePath(ctx);
+    }
+    
+    
+    /*
+    //Draw by filling
     UIBezierPath *path = [UIBezierPath bezierPathWithArcCenter:[self boundsCenter] radius:self.innerRadius startAngle:self.startAngle endAngle:self.startAngle+self.angle clockwise:YES];
     [path addArcWithCenter:[self boundsCenter] radius:self.outerRadius startAngle:self.startAngle+self.angle endAngle:self.startAngle clockwise:NO];
     [path closePath];
@@ -132,6 +148,7 @@
     CGContextAddPath(ctx, path.CGPath);
     CGContextSetFillColorWithColor(ctx, self.color.CGColor);
     CGContextFillPath(ctx);
+     */
 
 }
 

@@ -54,7 +54,8 @@
     
     CGPoint nowPoint  = [[touches anyObject] locationInView: self.view];
     CGFloat distance = [self distanceBetween:self.midPoint and:nowPoint];
-    if (self.innerRadius <= distance && distance <= self.outerRadius) {
+    
+    if (self.innerRadius <= distance && distance < self.outerRadius) {
         self.state = UIGestureRecognizerStateBegan;
     } else {
         self.state = UIGestureRecognizerStateFailed;

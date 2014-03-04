@@ -19,6 +19,11 @@
 
 @implementation ViewController
 
+- (BOOL)prefersStatusBarHidden
+{
+    return YES;
+}
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
@@ -30,12 +35,15 @@
     self.rgbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
     self.hsbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
 
-    [self.view addSubview:self.rgbColorControlView];
+    //[self.view addSubview:self.rgbColorControlView];
     [self.view addSubview:self.hsbColorControlView];
     
     NSDictionary *views = @{@"rgb":self.rgbColorControlView,@"hsb":self.hsbColorControlView};
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[hsb(300)]-[rgb]-40-|" options:0 metrics:nil views:views]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[rgb]-40-|" options:0 metrics:nil views:views]];
+
+    //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[hsb(300)]-[rgb]-40-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[hsb]|" options:0 metrics:nil views:views]];
+    
+    //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[rgb]-40-|" options:0 metrics:nil views:views]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[hsb]-|" options:0 metrics:nil views:views]];
 
 /*
@@ -87,8 +95,8 @@
         _rgbColorControlView = [XMRGBControlView new];
         _rgbColorControlView.innerRadius = 30;
         
-        _rgbColorControlView.touchDownSpeed = 0.25;
-        _rgbColorControlView.touchUpSpeed = 0.5;
+        _rgbColorControlView.touchDownSpeed = 0.15;
+        _rgbColorControlView.touchUpSpeed = 0.35;
         
     }
     return _rgbColorControlView;
@@ -99,10 +107,10 @@
     if (!_hsbColorControlView) {
         
         _hsbColorControlView = [XMHSBControlView new];
-        _hsbColorControlView.innerRadius = 30;
+        _hsbColorControlView.innerRadius = 50;
         
-        _hsbColorControlView.touchDownSpeed = 0.25;
-        _hsbColorControlView.touchUpSpeed = 0.5;
+        _hsbColorControlView.touchDownSpeed = 0.15;
+        _hsbColorControlView.touchUpSpeed = 0.35;
         
     }
     return _hsbColorControlView;

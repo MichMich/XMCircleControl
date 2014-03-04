@@ -51,8 +51,8 @@
 - (void) updateColors
 {
     
-    float saturation = 0.1 + self.saturationSection.value * 0.7;
-    float brightness = 0.1 + self.brightnessSection.value * 0.7;
+    float saturation = self.saturationSection.value * 0.8;
+    float brightness = 0.2+self.brightnessSection.value * 0.6;
     
     self.hueSection.color = [UIColor colorWithHue:self.hueSection.value saturation:1 brightness:1 alpha:1];
     self.saturationSection.color = [UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:1 alpha:1];
@@ -69,6 +69,9 @@
 
 - (void)sectionChanged:(XMCircleSectionLayer *)section
 {
+    self.saturationSection.value = (self.saturationSection.value < 0.025) ? 0.025 : self.saturationSection.value;
+    self.brightnessSection.value = (self.brightnessSection.value < 0.025) ? 0.025 : self.brightnessSection.value;
+
     [self updateColors];
     [self updateTracks];
 }

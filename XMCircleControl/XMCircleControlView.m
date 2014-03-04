@@ -206,8 +206,8 @@
         for (XMCircleSectionLayer *section in track.trackSections) {
            
         
-            CGFloat activeSectionAngle;
-            CGFloat activeSectionStartAngle;
+            CGFloat activeSectionAngle = 0;
+            CGFloat activeSectionStartAngle = 0;
             
             if (self.activeSection) {
                 activeSectionAngle = (self.activeSection.value * M_PI * 2);
@@ -265,10 +265,10 @@
                     
                     
                     [section animateProperties:@{@"startAngle":@(startAngle),
-                                                      @"angle":@(0),
-                                                      @"innerRadius":@(innerRadius),
-                                                      @"outerRadius":@(outerRadius)}
-                                             inTime:self.animationSpeed];
+                                                 @"angle":@(0),
+                                                 @"innerRadius":@(innerRadius),
+                                                 @"outerRadius":@(outerRadius)}
+                                        inTime:self.animationSpeed];
             
                 } else {
                     //Other Track, Other Section
@@ -295,10 +295,10 @@
                     
                     
                     [section animateProperties:@{@"startAngle":@(currentAngle),
-                                                      @"angle":@(sectionAngle),
-                                                      @"innerRadius":@(innerRadius),
-                                                      @"outerRadius":@(outerRadius)}
-                                             inTime:self.animationSpeed];
+                                                 @"angle":@(sectionAngle),
+                                                 @"innerRadius":@(innerRadius),
+                                                 @"outerRadius":@(outerRadius)}
+                                        inTime:self.animationSpeed];
                     
                     currentAngle += sectionAngle;
                 }
@@ -479,7 +479,7 @@
 {
     _innerRadius = innerRadius;
     
-    self.rotationGestureRecognizer.outerRadius = innerRadius;
+    self.rotationGestureRecognizer.innerRadius = innerRadius;
     [self updateSectionLayers];
 }
 
