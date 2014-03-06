@@ -14,6 +14,7 @@
 
 @property (strong, nonatomic) XMRGBControlView *rgbColorControlView;
 @property (strong, nonatomic) XMHSBControlView *hsbColorControlView;
+@property (strong, nonatomic) UIButton *toggleColormodeButton;
 
 @end
 
@@ -33,24 +34,30 @@
     
     self.rgbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
     self.hsbColorControlView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.toggleColormodeButton.translatesAutoresizingMaskIntoConstraints = NO;
 
     [self.view addSubview:self.rgbColorControlView];
     [self.view addSubview:self.hsbColorControlView];
+    [self.view addSubview:self.toggleColormodeButton];
     
-    NSDictionary *views = @{@"rgb":self.rgbColorControlView,@"hsb":self.hsbColorControlView};
+    NSDictionary *views = @{@"rgb":self.rgbColorControlView,@"hsb":self.hsbColorControlView,@"toggleColormodeButton":self.toggleColormodeButton};
     
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[rgb]-|" options:0 metrics:nil views:views]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[hsb]-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[toggleColormodeButton]-|" options:0 metrics:nil views:views]];
 
     //[self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[hsb]-[rgb(==hsb)]-|" options:0 metrics:nil views:views]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[hsb]-|" options:0 metrics:nil views:views]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-[hsb]-[toggleColormodeButton]-|" options:0 metrics:nil views:views]];
+    
+    [self.toggleColormodeButton addTarget:self action:@selector(toggleColormode:) forControlEvents:UIControlEventTouchUpInside];
 }
 
-- (void)didReceiveMemoryWarning
+- (void)toggleColormode:(UIButton *)sender
 {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+    self.hsbColorControlView.colorModeIsHue = !self.hsbColorControlView.colorModeIsHue;
 }
+
+
 
 - (XMRGBControlView *)rgbColorControlView
 {
@@ -71,13 +78,23 @@
     if (!_hsbColorControlView) {
         
         _hsbColorControlView = [XMHSBControlView new];
-        _hsbColorControlView.innerRadius = 50;
         
         _hsbColorControlView.touchDownSpeed = 0.15;
         _hsbColorControlView.touchUpSpeed = 0.35;
         
     }
     return _hsbColorControlView;
+}
+
+- (UIButton *)toggleColormodeButton
+{
+    if (!_toggleColormodeButton) {
+        _toggleColormodeButton = [UIButton new];
+        [_toggleColormodeButton setTitle:@"Toggle Colormode" forState:UIControlStateNormal];
+        return _toggleColormodeButton;
+    }
+    
+    return _toggleColormodeButton;
 }
 
 @end

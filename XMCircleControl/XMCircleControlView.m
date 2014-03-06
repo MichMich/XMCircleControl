@@ -153,6 +153,18 @@
     NSLog(@"%@ changed: %f", section.name, section.value);
 }
 
+- (void)sectionActivated:(XMCircleSectionLayer *)section
+{
+    //ABSTRACT FUNCTION
+    NSLog(@"%@ activated.", section.name);
+}
+
+- (void)sectionDeactivated:(XMCircleSectionLayer *)section
+{
+    //ABSTRACT FUNCTION
+    NSLog(@"%@ deactivated.", section.name);
+}
+
 - (CGPoint)boundsCenter
 {
     return CGPointMake(self.bounds.size.width/2, self.bounds.size.height/2);
@@ -340,6 +352,7 @@
     if (gesture.state == UIGestureRecognizerStateBegan || gesture.state == UIGestureRecognizerStateChanged) {
 
         if (self.activeTrack) {
+            
         
             self.angle = gesture.angle - self.activeTrack.startAngle;
             if (self.angle < 0) self.angle += M_PI * 2;
@@ -351,6 +364,8 @@
                 
                 self.activeSection = [self.activeTrack sectionForAngle:self.angle];
                 if (self.activeSection) {
+                    [self sectionActivated:self.activeSection];
+                    
                     self.activeSectionStartValue = self.activeSection.value;
                     self.animationSpeed = self.touchDownSpeed;
                     [self updateSectionLayers];
@@ -387,10 +402,14 @@
     } else
         
     if (gesture.state == UIGestureRecognizerStateEnded) {
+        XMCircleSectionLayer *currentActiveSection = self.activeSection;
+        
         self.animationSpeed = self.touchUpSpeed;
         self.activeTrack = nil;
         self.activeSection = nil;
         [self updateSectionLayers];
+        
+        [self sectionDeactivated:currentActiveSection];
     }
     
 }

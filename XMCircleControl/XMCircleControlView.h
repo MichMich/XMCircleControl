@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "XMCircleSectionLayer.h"
+#import "XMOneFingerRotationGestureRecognizer.h"
 
 #define RAD2DEG(radians) ((radians) * (180.0 / M_PI))
 #define DEG2RAD(angle) ((angle) / 180.0 * M_PI)
@@ -28,7 +29,7 @@
 @end
 
 
-@interface XMCircleControlView : UIView
+@interface XMCircleControlView : UIControl
 
 @property (nonatomic, strong) NSArray *circleTracks;
 
@@ -45,8 +46,14 @@
 @property (strong, nonatomic) XMCircleTrack *activeTrack;
 @property (strong, nonatomic) XMCircleSectionLayer *activeSection;
 
+- (void) rotationGesture:(XMOneFingerRotationGestureRecognizer *)gesture;
+
 - (void)sectionChanged:(XMCircleSectionLayer *)section;
+- (void)sectionActivated:(XMCircleSectionLayer *)section;
+- (void)sectionDeactivated:(XMCircleSectionLayer *)section;
+
 - (CGPoint)boundsCenter;
 - (CGFloat)maximumRadius;
 - (void) updateSectionLayers;
+
 @end
