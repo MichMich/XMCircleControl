@@ -187,7 +187,7 @@
         
 
         if (self.colorModeIsHue) {
-            float saturation = (self.saturationSection.value > 0.5) ? 0 : 1;
+            float saturation = 0; //(self.saturationSection.value > 0.5) ? 0 : 1;
 
             [self.hueLabel setColor:[UIColor colorWithHue:self.hueSection.value saturation:0 brightness:1 alpha:1]];
             [self.saturationLabel setColor:[UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:1 alpha:1]];
@@ -241,8 +241,8 @@
 
 - (void)sectionChanged:(XMCircleSectionLayer *)section
 {
-    self.saturationSection.value = (self.saturationSection.value < 0.025) ? 0.025 : self.saturationSection.value;
-    self.brightnessSection.value = (self.brightnessSection.value < 0.025) ? 0.025 : self.brightnessSection.value;
+    self.saturationSection.value = (self.saturationSection.value < 0.0005) ? 0.0005 : self.saturationSection.value;
+    self.brightnessSection.value = (self.brightnessSection.value < 0.0005) ? 0.0005 : self.brightnessSection.value;
 
     [self updateColors];
     [self updateTracks];
