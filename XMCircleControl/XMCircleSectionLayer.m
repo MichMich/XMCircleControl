@@ -18,6 +18,7 @@
         self.contentsScale = [UIScreen mainScreen].scale;
         self.needsDisplayOnBoundsChange = YES;
         self.delegate = self;
+        self.controlType = XMCircleSectionControlTypeRelative;
     }
     return self;
 }
@@ -27,6 +28,7 @@
     self = [super initWithLayer:layer];
     if (self) {
         XMCircleSectionLayer *other = layer;
+        self.controlType = other.controlType;
         self.angle = other.angle;
         self.startAngle = other.startAngle;
         self.innerRadius = other.innerRadius;

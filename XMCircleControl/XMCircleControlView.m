@@ -196,11 +196,13 @@
                 if (activeSectionAngle < self.activeSection.minimumAngleWhenActive)  activeSectionAngle = self.activeSection.minimumAngleWhenActive;
                 if (activeSectionAngle > self.activeSection.maximumAngleWhenActive && self.activeSection.maximumAngleWhenActive > 0)  activeSectionAngle = self.activeSection.maximumAngleWhenActive;
                 
-                if (!self.activeSection.fixToStartAngle) {
-                    activeSectionStartAngle = (self.angle + track.startAngle) - activeSectionAngle;
-                } else {
-                    activeSectionStartAngle = track.startAngle;
-                }
+
+                    if (!self.activeSection.fixToStartAngle) {
+                        activeSectionStartAngle = (self.angle + track.startAngle) - activeSectionAngle;
+                    } else {
+                        activeSectionStartAngle = track.startAngle;
+                    }
+
                 
                 if (self.activeSection.continuous) {
                     activeSectionStartAngle = track.startAngle + M_PI * 2 * self.activeSection.value;
@@ -364,6 +366,11 @@
                 
                 self.activeSection = [self.activeTrack sectionForAngle:self.angle];
                 if (self.activeSection) {
+                    if (self.activeSection.controlType == XMCircleSectionControlTypeAbsolute) {
+                        self.activeSection.value = self.angle / (M_PI *2);
+                        [self sectionChanged:self.activeSection];
+                    }
+                    
                     [self sectionActivated:self.activeSection];
                     
                     self.activeSectionStartValue = self.activeSection.value;
@@ -375,20 +382,29 @@
             
             if (gesture.state ==UIGestureRecognizerStateChanged) {
                 if (self.activeSection) {
-                    float sectionValue = self.activeSection.value;
                     
-                    sectionValue += (gesture.rotation / (M_PI * 2));
+                    if (self.activeSection.controlType == XMCircleSectionControlTypeRelative) {
+                        
+                        float sectionValue = self.activeSection.value;
+                        
+                        sectionValue += (gesture.rotation / (M_PI * 2));
+                        
+                        if (!self.activeSection.continuous) {
+                            if (sectionValue > 1) sectionValue = 1;
+                            if (sectionValue < 0) sectionValue = 0;
+                        } else {
+                            if (sectionValue > 1) sectionValue -= 1;
+                            if (sectionValue < 0) sectionValue += 1;
+                        }
+                      
+                        self.activeSection.value = sectionValue;
                     
-                    if (!self.activeSection.continuous) {
-                        if (sectionValue > 1) sectionValue = 1;
-                        if (sectionValue < 0) sectionValue = 0;
                     } else {
-                        if (sectionValue > 1) sectionValue -= 1;
-                        if (sectionValue < 0) sectionValue += 1;
+                    
+                        self.activeSection.value = self.angle / (M_PI *2);
+                    
                     }
-                  
-                    self.activeSection.value = sectionValue;
-
+                    
                     [self sectionChanged:self.activeSection];
                     
                     self.animationSpeed = 0;

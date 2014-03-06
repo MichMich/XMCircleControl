@@ -10,6 +10,7 @@
 #import "UIColor+ColorTemperature.h"
 #import <XMCircleTypeView.h>
 #import "XMOneFingerRotationGestureRecognizer.h"
+#import "XMCircleTypeView+Color.h"
 
 @interface XMHSBControlView ()
 
@@ -60,8 +61,6 @@
     return self;
 }
 
-
-
 - (void)layoutSubviews
 {
     [super layoutSubviews];
@@ -93,13 +92,6 @@
     label.textAttributes = @{NSFontAttributeName: [UIFont systemFontOfSize:14], NSForegroundColorAttributeName: [UIColor whiteColor]};
     label.characterSpacing = 0.8;
 
-    /*
-    label.layer.shadowColor = [UIColor blackColor].CGColor;
-    label.layer.shadowRadius = 0;
-    label.layer.shadowOpacity = 0.5;
-    label.layer.shadowOffset = CGSizeMake(0, 1);
-    */
-    
     return label;
 }
 
@@ -146,22 +138,26 @@
     [self updatePowerButtonColor];
 }
 
-- (void) updatePowerButtonColor
+- (void)updatePowerButtonColor
 {
     float brightness = 0.2+self.brightnessSection.value * 0.8;
-    
+    float powerOffBrightness = 0.15;
     if (self.colorModeIsHue) {
-        self.powerButton.backgroundColor = (self.power) ? [UIColor colorWithHue:self.hueSection.value saturation:self.saturationSection.value brightness:brightness alpha:1] : [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+        self.powerButton.backgroundColor = (self.power) ? [UIColor colorWithHue:self.hueSection.value saturation:self.saturationSection.value brightness:brightness alpha:1] : [UIColor colorWithRed:powerOffBrightness green:powerOffBrightness blue:powerOffBrightness alpha:1];
     } else {
-        self.powerButton.backgroundColor = (self.power) ? [UIColor colorWithColorTemperature:self.ctSection.value andBrightness:brightness]: [UIColor colorWithRed:0.1 green:0.1 blue:0.1 alpha:1];
+        self.powerButton.backgroundColor = (self.power) ? [UIColor colorWithColorTemperature:self.ctSection.value andBrightness:brightness]: [UIColor colorWithRed:powerOffBrightness green:powerOffBrightness blue:powerOffBrightness alpha:1];
     }
 }
 
-- (void) updateTracks
+- (void)updateTracks
 {
     self.hueTrack.availableAngle = (!self.power) ? 0 : M_PI * 2;
+    
     self.ctTrack.availableAngle = (!self.power) ? 0 : M_PI * 2;
+    
     self.saturationTrack.availableAngle = (!self.power) ? 0 : M_PI * 2 * self.saturationSection.value;
+    //self.saturationTrack.availableAngle = (!self.power) ? 0 : M_PI * 2;
+    
     self.brightnessTrack.availableAngle = (!self.power) ? 0 : M_PI * 2 * self.brightnessSection.value;
     
     if (self.power) {
@@ -178,16 +174,33 @@
     
 }
 
-- (void) updateLabels
+- (void)updateLabels
 {
     [UIView animateWithDuration:self.animationSpeed/2 animations:^{
         self.hueLabel.alpha = 0;
         self.ctLabel.alpha = 0;
         self.saturationLabel.alpha = 0;
         self.brightnessLabel.alpha = 0;
-
         
     } completion:^(BOOL finished) {
+        
+        
+
+        if (self.colorModeIsHue) {
+            float saturation = (self.saturationSection.value > 0.5) ? 0 : 1;
+
+            [self.hueLabel setColor:[UIColor colorWithHue:self.hueSection.value saturation:0 brightness:1 alpha:1]];
+            [self.saturationLabel setColor:[UIColor colorWithHue:self.hueSection.value saturation:saturation brightness:1 alpha:1]];
+            [self.brightnessLabel setColor:[UIColor colorWithHue:self.hueSection.value saturation:0 brightness:1 alpha:1]];
+        } else {
+            [self.ctLabel setColor:[UIColor colorWithColorTemperature:self.ctSection.value andBrightness:0.5]];
+            [self.brightnessLabel setColor:[UIColor colorWithHue:self.ctSection.value saturation:0 brightness:1 alpha:1]];
+        }
+        
+        
+
+        
+        
         
        [UIView animateWithDuration:self.animationSpeed delay:self.animationSpeed options:UIViewAnimationOptionBeginFromCurrentState animations:^{
            if (!self.power || self.activeSection != nil) {
@@ -212,8 +225,8 @@
                    self.brightnessLabel.alpha = 1;
                    self.ctLabel.alpha = 1;
                    
-                   self.ctLabel.radius = [self maxRadius] * 0.465;
-                   self.brightnessLabel.radius = [self maxRadius] * 0.79;
+                   self.ctLabel.radius = [self maxRadius] * 0.46;
+                   self.brightnessLabel.radius = [self maxRadius] * 0.78;
                }
            }
            
@@ -240,6 +253,7 @@
     if (section == self.brightnessSection) [self.delegate brightnessChanged:self];
     
 }
+
 - (void)sectionActivated:(XMCircleSectionLayer *)section
 {
     [self updateLabels];
@@ -265,8 +279,6 @@
     }];
     
     [self.delegate powerChanged:self];
-    
-    NSLog(@"Power button pressed");
 }
 
 #pragma mark - Getters & Setters
@@ -324,6 +336,7 @@
         _hueSection.maximumAngleWhenActive = M_PI /4;
         _hueSection.minimumAngleWhenActive = M_PI /4;
         _hueSection.continuous = YES;
+        _hueSection.controlType = XMCircleSectionControlTypeAbsolute;
     }
     return _hueSection;
 }
@@ -419,7 +432,6 @@
     [self updateColors];
     [self updateLabels];
     [self updateSectionLayers];
-    NSLog(@"Colormode is hue: %d", self.colorModeIsHue);
 }
 
 @end

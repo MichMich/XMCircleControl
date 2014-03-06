@@ -10,6 +10,13 @@
 
 @interface XMCircleSectionLayer : CALayer
 
+typedef enum {
+    XMCircleSectionControlTypeRelative,
+    XMCircleSectionControlTypeAbsolute
+} XMCircleSectionControlType;
+
+@property (nonatomic) XMCircleSectionControlType controlType;
+
 @property (nonatomic) CGFloat innerRadius;
 @property (nonatomic) CGFloat outerRadius;
 
