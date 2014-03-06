@@ -46,7 +46,7 @@
     self = [super init];
     if (self) {
         
-        _innerRadiusFactor = 0.35;
+        _innerRadiusFactor = 0.3;
         _colorModeIsHue = YES;
         
         self.circleTracks = @[self.hueTrack,self.saturationTrack,self.ctTrack,self.brightnessTrack];
@@ -198,7 +198,10 @@
         }
         
         
-
+//        self.hueLabel.text = [NSString stringWithFormat:@"Hue: %d%%", (int) (self.hueSection.value*100)];
+//        self.ctLabel.text = [NSString stringWithFormat:@"Color temperature: %d%%", (int) (self.ctSection.value*100)];
+//        self.saturationLabel.text = [NSString stringWithFormat:@"Saturation: %d%%", (int) (self.saturationSection.value*100)];
+//        self.brightnessLabel.text = [NSString stringWithFormat:@"Brightness: %d%%", (int) (self.brightnessSection.value*100)];
         
         
         
@@ -216,17 +219,17 @@
                    self.brightnessLabel.alpha = 1;
                    self.ctLabel.alpha = 0;
                    
-                   self.hueLabel.radius = [self maxRadius] * 0.4;
-                   self.saturationLabel.radius = [self maxRadius] * 0.625;
-                   self.brightnessLabel.radius = [self maxRadius] * 0.85;
+                   self.brightnessLabel.radius = [self maxRadius] * 0.84;
+                   self.saturationLabel.radius = [self maxRadius] * 0.60;
+                   self.hueLabel.radius = [self maxRadius] * 0.36;
                } else {
                    self.hueLabel.alpha = 0;
                    self.saturationLabel.alpha = 0;
                    self.brightnessLabel.alpha = 1;
                    self.ctLabel.alpha = 1;
                    
-                   self.ctLabel.radius = [self maxRadius] * 0.46;
-                   self.brightnessLabel.radius = [self maxRadius] * 0.78;
+                   self.brightnessLabel.radius = [self maxRadius] * 0.765;
+                   self.ctLabel.radius = [self maxRadius] * 0.425;
                }
            }
            
@@ -241,8 +244,8 @@
 
 - (void)sectionChanged:(XMCircleSectionLayer *)section
 {
-    self.saturationSection.value = (self.saturationSection.value < 0.0005) ? 0.0005 : self.saturationSection.value;
-    self.brightnessSection.value = (self.brightnessSection.value < 0.0005) ? 0.0005 : self.brightnessSection.value;
+//    self.saturationSection.value = (self.saturationSection.value < 0.002) ? 0.002 : self.saturationSection.value;
+//    self.brightnessSection.value = (self.brightnessSection.value < 0.002) ? 0.002 : self.brightnessSection.value;
 
     [self updateColors];
     [self updateTracks];
