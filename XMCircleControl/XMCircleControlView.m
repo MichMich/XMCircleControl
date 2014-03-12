@@ -144,7 +144,6 @@
     [self updateSectionLayers];
 }
 
-
 #pragma mark - Public Methods
 
 - (void)sectionChanged:(XMCircleSectionLayer *)section
@@ -343,8 +342,6 @@
 
 - (void) rotationGesture:(XMOneFingerRotationGestureRecognizer *)gesture
 {
-
-
     self.distance = gesture.distance - self.innerRadius;
 
     if (gesture.state == UIGestureRecognizerStateBegan) {
@@ -451,7 +448,7 @@
 
 - (XMCircleTrack *)trackForDistance:(CGFloat)distance
 {
-    int trackIndex = distance / [self trackWidth];
+    int trackIndex = distance / ([self trackWidth]+self.trackSpace);
     
     if (trackIndex < [self numberOfVisibleTracks]) return [self trackForIndex:trackIndex];
     

@@ -176,7 +176,8 @@
 
 - (void)updateLabels
 {
-    [UIView animateWithDuration:self.animationSpeed/2 animations:^{
+
+    [UIView animateWithDuration:self.animationSpeed/2 delay:0 options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction animations:^{
         self.hueLabel.alpha = 0;
         self.ctLabel.alpha = 0;
         self.saturationLabel.alpha = 0;
@@ -197,15 +198,7 @@
             [self.brightnessLabel setColor:[UIColor colorWithHue:self.ctSection.value saturation:0 brightness:1 alpha:1]];
         }
         
-        
-//        self.hueLabel.text = [NSString stringWithFormat:@"Hue: %d%%", (int) (self.hueSection.value*100)];
-//        self.ctLabel.text = [NSString stringWithFormat:@"Color temperature: %d%%", (int) (self.ctSection.value*100)];
-//        self.saturationLabel.text = [NSString stringWithFormat:@"Saturation: %d%%", (int) (self.saturationSection.value*100)];
-//        self.brightnessLabel.text = [NSString stringWithFormat:@"Brightness: %d%%", (int) (self.brightnessSection.value*100)];
-        
-        
-        
-       [UIView animateWithDuration:self.animationSpeed delay:self.animationSpeed options:UIViewAnimationOptionBeginFromCurrentState animations:^{
+       [UIView animateWithDuration:self.animationSpeed delay:self.animationSpeed options:UIViewAnimationOptionBeginFromCurrentState|UIViewAnimationOptionAllowUserInteraction animations:^{
            if (!self.power || self.activeSection != nil) {
                self.hueLabel.alpha = 0;
                self.saturationLabel.alpha = 0;
