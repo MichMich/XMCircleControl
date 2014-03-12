@@ -139,6 +139,7 @@
 		4C6679B718BF6FFB00BCE174 /* XMCircleControl */ = {
 			isa = PBXGroup;
 			children = (
+				4CBBDC5E18D0A0EF002BC63D /* Classes */,
 				4C0A620018C67396001217CB /* UIColor+ColorTemperature.h */,
 				4C0A620118C67396001217CB /* UIColor+ColorTemperature.m */,
 				4CA376D218C8F3E60091BB5B /* XMCircleTypeView+Color.h */,
@@ -154,12 +155,6 @@
 				4CE8D10318C257D0006C97A5 /* XMRGBControlView.m */,
 				4C02A7D918C530B2006AC5D3 /* XMHSBControlView.h */,
 				4C02A7DA18C530B2006AC5D3 /* XMHSBControlView.m */,
-				4C6679E618BF723F00BCE174 /* XMCircleControlView.h */,
-				4C6679E718BF723F00BCE174 /* XMCircleControlView.m */,
-				4C677F3E18BFA4CF00C3645D /* XMCircleSectionLayer.h */,
-				4C677F3F18BFA4CF00C3645D /* XMCircleSectionLayer.m */,
-				4C6679E918BF7C3200BCE174 /* XMOneFingerRotationGestureRecognizer.h */,
-				4C6679EA18BF7C3200BCE174 /* XMOneFingerRotationGestureRecognizer.m */,
 			);
 			path = XMCircleControl;
 			sourceTree = "<group>";
@@ -191,6 +186,19 @@
 				4C6679D918BF6FFB00BCE174 /* InfoPlist.strings */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		4CBBDC5E18D0A0EF002BC63D /* Classes */ = {
+			isa = PBXGroup;
+			children = (
+				4C6679E618BF723F00BCE174 /* XMCircleControlView.h */,
+				4C6679E718BF723F00BCE174 /* XMCircleControlView.m */,
+				4C677F3E18BFA4CF00C3645D /* XMCircleSectionLayer.h */,
+				4C677F3F18BFA4CF00C3645D /* XMCircleSectionLayer.m */,
+				4C6679E918BF7C3200BCE174 /* XMOneFingerRotationGestureRecognizer.h */,
+				4C6679EA18BF7C3200BCE174 /* XMOneFingerRotationGestureRecognizer.m */,
+			);
+			path = Classes;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
